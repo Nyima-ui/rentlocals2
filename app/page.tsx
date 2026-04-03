@@ -1,15 +1,10 @@
+import Navbar from "@/components/Navbar";
 import Link from "next/link";
 
 export default function Home() {
   return (
     <div className="max-w-7xl mx-auto px-10">
-      <header>
-        <nav className="flex justify-between py-5">
-          <p>LOGO</p>
-
-          <Link href="/signup">Sign up</Link>
-        </nav>
-      </header>
+      <Navbar />
 
       <main>
         <h1 className="text-4xl">Home page</h1>
