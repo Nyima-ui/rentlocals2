@@ -1,4 +1,4 @@
-'use server'
+"use server";
 import { createClient } from "./supabase/server";
 
 export const searchListings = async (query: string) => {
@@ -14,4 +14,17 @@ export const searchListings = async (query: string) => {
 
   if (error) throw error;
   return data;
+};
+
+export const bookingAction = async (payload: BookingPayload) => {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthorized");
+
+  const { error } = await supabase.from("booking").insert(payload);
+
+  if (error) throw error;
 };
