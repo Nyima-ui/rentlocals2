@@ -16,36 +16,3 @@ export const CATEGORIES = [
   { name: "memory card", categoryId: 9033 },
   { name: "garden machinery", categoryId: 221 },
 ];
-
-export interface HyggloPrice {
-  days: number;
-  label: string;
-}
-
-export interface HyggloListing {
-  slug: string;
-  product: {
-    name: string;
-    description: string;
-    category: { name: string };
-    prices: HyggloPrice[];
-    images: { fullSizeUrl: string }[];
-  };
-  location: {
-    street?: string;
-    label: string;
-  };
-}
-export interface ListingPrices {
-  day?: string;
-  week?: string;
-}
-
-export interface Listing {
-  title: string;
-  description: string;
-  category: string;
-  location: string;
-  prices: ListingPrices;
-  pictures: string[];
-}

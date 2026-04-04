@@ -4,8 +4,6 @@ import {
   COUNTRIES,
   CATEGORIES,
   type Country,
-  type HyggloListing,
-  type Listing,
 } from "./constants";
 
 function pickRandom<T>(arr: T[]): T {
@@ -19,8 +17,16 @@ function parseHyggloListing(listing: HyggloListing): Listing {
     category: listing.product.category.name,
     location: listing.location.street || listing.location.label,
     prices: {
-      day: listing.product.prices.find((p) => p.days === 1)?.label,
-      week: listing.product.prices.find((p) => p.days === 7)?.label,
+      day: parseFloat(
+        listing.product.prices
+          .find((p) => p.days === 1)
+          ?.label.replace(/[^0-9.]/g, "") ?? "0",
+      ),
+      week: parseFloat(
+        listing.product.prices
+          .find((p) => p.days === 7)
+          ?.label.replace(/[^0-9.]/g, "") ?? "0",
+      ),
     },
     pictures: listing.product.images.map((img) => img?.fullSizeUrl),
   };
