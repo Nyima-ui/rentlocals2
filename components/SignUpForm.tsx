@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { CircleUserRound } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const SignUpForm = () => {
   const supabase = createClient();
