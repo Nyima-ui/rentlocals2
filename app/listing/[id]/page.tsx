@@ -6,10 +6,13 @@ import Image from "next/image";
 import { bookingAction } from "@/lib/action";
 import { useAuth } from "@/context/AuthProvider";
 import { calculateTotalPrice } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 const Listing = () => {
   //LATER: TURN BACK THIS COMPONENT IN SERVER SIDE
   const params = useParams();
+  const router = useRouter();
   const id = params.id;
   const [listing, setListing] = useState<IncomingListing | null>(null);
   const [rentalPeriod, setRentalPeriod] = useState({
@@ -35,14 +38,16 @@ const Listing = () => {
       setListing(data);
     };
     fetchListing();
-  }, []);
+  }, [id, supabase]);
 
   useEffect(() => {
     console.log(listing);
   }, [listing]);
 
+  const isOwner = user.id === listing?.owner_id;
+
   const requestBooking = async () => {
-    if (!user.id) return;
+    if (!user.id) return router.push("/signup");
     if (!listing) return;
 
     if (!rentalPeriod.from || !rentalPeriod.to) {
@@ -68,6 +73,7 @@ const Listing = () => {
     try {
       await bookingAction(bookingInfo);
     } catch (err) {
+      if (isRedirectError(err)) throw err;
       console.error(`Error requesting booking ${err}`);
       return;
     }
@@ -122,8 +128,9 @@ const Listing = () => {
       </div>
 
       <button
-        className="border px-4 py-2 rounded-md cursor-pointer mt-10"
+        className={`border px-4 py-2 rounded-md  mt-10 ${isOwner ? "bg-gray-700 cursor-not-allowed" : "cursor-pointer"}`}
         onClick={requestBooking}
+        disabled={isOwner}
       >
         Request booking
       </button>

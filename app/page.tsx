@@ -6,6 +6,10 @@ import Link from "next/link";
 export default async function Home() {
   const supabase = await createClient();
   const { data: listings, error } = await supabase.from("listings").select("*");
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <div className="max-w-7xl mx-auto px-10">
       <Navbar />
@@ -30,7 +34,7 @@ export default async function Home() {
               href={`/listing/${item.id}`}
               className="border px-1 py-2 rounded-md inline-block"
             >
-              Checkout
+              View item
             </Link>
             <p>₹{item.price_day}</p>
           </div>

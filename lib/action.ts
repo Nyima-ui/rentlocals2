@@ -1,4 +1,5 @@
 "use server";
+import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
 
 export const searchListings = async (query: string) => {
@@ -24,7 +25,38 @@ export const bookingAction = async (payload: BookingPayload) => {
   } = await supabase.auth.getUser();
   if (!user) throw new Error("Unauthorized");
 
-  const { error } = await supabase.from("booking").insert(payload);
+  const { data: myBooking, error: myBookingError } = await supabase
+    .from("booking")
+    .select("id")
+    .eq("listing_id", payload.listing_id)
+    .eq("renter_id", payload.renter_id)
+    .maybeSingle();
+
+  if (myBookingError) throw myBookingError;
+
+  if (myBooking) redirect(`/booking/${myBooking.id}`);
+
+  const { data: conflictingBooking, error: conflictingBookingError } =
+    await supabase
+      .from("booking")
+      .select("id")
+      .eq("listing_id", payload.listing_id)
+      .in("status", ["accepted", "active"])
+      .lt("start_date", payload.end_date)
+      .gt("end_date", payload.start_date)
+      .maybeSingle();
+
+  if (conflictingBookingError) throw conflictingBookingError;
+
+  if (conflictingBooking) throw new Error("These dates are already booked");
+
+  const { data, error } = await supabase
+    .from("booking")
+    .insert(payload)
+    .select("id")
+    .single();
 
   if (error) throw error;
+
+  redirect(`/booking/${data.id}`);
 };
